@@ -1,0 +1,62 @@
+def is_safe(board, row, col, n, row_check, diag_check, anti_diag_check):
+    # Check if it's safe to place a queen at board[row][col]
+
+    # Check the row
+    if row_check[row]:
+        return False
+
+    # Check the diagonal
+    if diag_check[row + col]:
+        return False
+
+    # Check the anti-diagonal
+    if anti_diag_check[row - col + n - 1]:
+        return False
+
+    return True
+
+
+def solve_n_queens_util(board, col, n, row_check, diag_check, anti_diag_check):
+    # Base case: All queens have been placed
+    if col >= n:
+        return True
+
+    # Try placing the queen in each row of the current column
+    for i in range(n):
+        if is_safe(board, i, col, n, row_check, diag_check, anti_diag_check):
+            board[i][col] = 1
+            row_check[i] = True
+            diag_check[i + col] = True
+            anti_diag_check[i - col + n - 1] = True
+
+            # Recur to place the remaining queens
+            if solve_n_queens_util(board, col + 1, n, row_check, diag_check, anti_diag_check):
+                return True
+
+            # If placing the queen at board[i][col] doesn't lead to a solution, backtrack
+            board[i][col] = 0
+            row_check[i] = False
+            diag_check[i + col] = False
+            anti_diag_check[i - col + n - 1] = False
+
+    # If no queen can be placed in the current column, return False
+    return False
+
+
+def solve_n_queens(n):
+    board = [[0] * n for _ in range(n)]
+    row_check = [False] * n
+    diag_check = [False] * (2 * n - 1)
+    anti_diag_check = [False] * (2 * n - 1)
+
+    if not solve_n_queens_util(board, 0, n, row_check, diag_check, anti_diag_check):
+        print("No solution exists.")
+    else:
+        print("Solution:")
+        for row in board:
+            print(" ".join(map(str, row)))
+
+
+# Example usage:
+n = 4  # Number of queens and size of the chessboard
+solve_n_queens(n)
